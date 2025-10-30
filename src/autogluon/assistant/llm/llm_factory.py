@@ -10,6 +10,7 @@ from .base_chat import GlobalTokenTracker
 from .bedrock_chat import AssistantChatBedrock, create_bedrock_chat, get_bedrock_models
 from .openai_chat import AssistantChatOpenAI, create_openai_chat, get_openai_models
 from .sagemaker_chat import SagemakerEndpointChat, create_sagemaker_chat, get_sagemaker_endpoints
+from .yuanjing_chat import create_yuanjing_chat, get_yuanjing_models
 
 logger = logging.getLogger(__name__)
 
@@ -34,12 +35,14 @@ class ChatLLMFactory:
             return get_anthropic_models()
         elif provider == "sagemaker":
             return get_sagemaker_endpoints()
+        elif provider == "yuanjing":
+            return get_yuanjing_models()
         else:
             raise ValueError(f"Unsupported provider: {provider}")
 
     @classmethod
     def get_valid_providers(cls):
-        return ["azure", "openai", "bedrock", "anthropic", "sagemaker"]
+        return ["azure", "openai", "bedrock", "anthropic", "sagemaker", "yuanjing"]
 
     @classmethod
     def get_chat_model(cls, config: DictConfig, session_name: str) -> Union[
@@ -57,7 +60,7 @@ class ChatLLMFactory:
         if provider not in valid_providers:
             raise ValueError(f"Invalid provider: {provider}. Must be one of {valid_providers}")
 
-        if provider != "sagemaker":
+        if provider not in {"sagemaker", "yuanjing"}:
             valid_models = cls.get_valid_models(provider)
             if model not in valid_models:
                 if model[3:] not in valid_models:  # TODO: better logic for cross region inference
@@ -75,5 +78,7 @@ class ChatLLMFactory:
             return create_bedrock_chat(config, session_name)
         elif provider == "sagemaker":
             return create_sagemaker_chat(config, session_name)
+        elif provider == "yuanjing":
+            return create_yuanjing_chat(config, session_name)
         else:
             raise ValueError(f"Unsupported provider: {provider}")
