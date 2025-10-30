@@ -1,4 +1,5 @@
 import logging
+import contextlib
 from typing import Any, Dict, List
 
 from autogluon.assistant.tools_registry.indexing import TutorialIndexer
@@ -31,7 +32,22 @@ class RetrieverAgent(BaseAgent):
         )
 
         # Initialize tutorial indexer
-        self.indexer = TutorialIndexer()
+        hf_endpoint = None
+        with contextlib.suppress(Exception):
+            hf_endpoint = self.config.get("huggingface_endpoint")
+        if not hf_endpoint:
+            try:
+                global_cfg = self.config["_global_config"]
+            except Exception:
+                global_cfg = None
+            if global_cfg is not None:
+                if isinstance(global_cfg, dict):
+                    hf_endpoint = global_cfg.get("huggingface_endpoint")
+                else:
+                    with contextlib.suppress(Exception):
+                        hf_endpoint = global_cfg.get("huggingface_endpoint")
+
+        self.indexer = TutorialIndexer(hf_endpoint=hf_endpoint)
         self._initialize_indexer()
 
         if self.retriever_llm_config.multi_turn:

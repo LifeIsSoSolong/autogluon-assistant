@@ -23,7 +23,7 @@ class TutorialIndexer:
     Maintains separate indices for regular and condensed tutorials for each tool.
     """
 
-    def __init__(self, embedding_model_name: str = "BAAI/bge-base-en-v1.5"):
+    def __init__(self, embedding_model_name: str = "BAAI/bge-base-en-v1.5", hf_endpoint: Optional[str] = None):
         self.registry = ToolsRegistry()
         self.embedding_model_name = embedding_model_name
         self.sanitized_model_name = self.embedding_model_name.replace("/", "_")
@@ -32,6 +32,13 @@ class TutorialIndexer:
         self.metadata: Dict[str, Dict[str, List[Dict]]] = {}  # {tool_name: {type: [metadata]}}
         self.index_dir = Path(__file__).parent / "indices" / self.sanitized_model_name
         self.index_dir.mkdir(parents=True, exist_ok=True)
+
+        self.hf_endpoint = hf_endpoint or os.environ.get("HF_ENDPOINT") or os.environ.get("HUGGINGFACE_HUB_BASE_URL")
+        if self.hf_endpoint:
+            normalized_endpoint = self.hf_endpoint.rstrip('/')
+            os.environ["HF_ENDPOINT"] = normalized_endpoint
+            os.environ["HUGGINGFACE_HUB_BASE_URL"] = normalized_endpoint
+            logger.info(f"TutorialIndexer using Hugging Face endpoint: {normalized_endpoint}")
 
     def __del__(self):
         """Cleanup method to properly close the embedding model."""

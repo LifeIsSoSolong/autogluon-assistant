@@ -29,6 +29,23 @@ class AssistantChatYuanjing(BaseAssistantChat):
         if self.client is None:
             raise RuntimeError("OpenAI client not initialized")
 
+        def _normalize_content(content: Any) -> str:
+            if isinstance(content, list):
+                parts: List[str] = []
+                for part in content:
+                    if isinstance(part, dict):
+                        text = part.get("text") or part.get("content")
+                        if text:
+                            parts.append(str(text))
+                    else:
+                        parts.append(str(part))
+                content = "\n".join(parts)
+            elif isinstance(content, dict):
+                content = content.get("text") or content.get("content") or ""
+            if content is None:
+                content = ""
+            return str(content)
+
         if hasattr(prompt_messages, "to_messages"):
             messages = prompt_messages.to_messages()
         else:
@@ -41,18 +58,18 @@ class AssistantChatYuanjing(BaseAssistantChat):
                 role = "user"
             elif role == "ai":
                 role = "assistant"
-            content = message.content
-            if isinstance(content, list):
-                parts: List[str] = []
-                for part in content:
-                    if isinstance(part, dict) and part.get("type") == "text":
-                        parts.append(part.get("text", ""))
-                    else:
-                        parts.append(str(part))
-                content = "\n".join([p for p in parts if p])
-            if content is None:
-                content = ""
+            content = _normalize_content(message.content).strip()
+            if not content:
+                continue
             payload.append({"role": role, "content": content})
+
+        if not payload:
+            combined = "\n".join(
+                text for text in (_normalize_content(msg.content) for msg in messages) if text.strip()
+            ).strip()
+            if not combined:
+                raise ValueError("Unable to build non-empty prompt for Yuanjing request.")
+            payload.append({"role": "user", "content": combined})
 
         request_payload: Dict[str, Any] = {
             "model": self.model_name,
@@ -67,9 +84,13 @@ class AssistantChatYuanjing(BaseAssistantChat):
         choice = response.choices[0]
         text = getattr(choice.message, "content", "") or ""
         usage = getattr(response, "usage", None)
+        input_tokens = getattr(usage, "prompt_tokens", 0) if usage else 0
+        output_tokens = getattr(usage, "completion_tokens", 0) if usage else 0
+        total_tokens = getattr(usage, "total_tokens", input_tokens + output_tokens) if usage else (input_tokens + output_tokens)
         usage_metadata = {
-            "input_tokens": getattr(usage, "prompt_tokens", 0) if usage else 0,
-            "output_tokens": getattr(usage, "completion_tokens", 0) if usage else 0,
+            "input_tokens": input_tokens,
+            "output_tokens": output_tokens,
+            "total_tokens": total_tokens,
         }
         return AIMessage(content=text, usage_metadata=usage_metadata)
 
@@ -113,3 +134,4 @@ def create_yuanjing_chat(config: DictConfig, session_name: str) -> AssistantChat
 
 def get_yuanjing_models() -> List[str]:
     return []
+

@@ -8,6 +8,7 @@ num_tutorial_retrievals: 30
 max_num_tutorials: 5
 max_user_input_length: 2048
 max_error_message_length: 2048
+huggingface_endpoint: https://hf-mirror.com
 max_tutorial_length: 32768
 create_venv: false
 condense_tutorials: True
@@ -79,3 +80,5 @@ tool_selector:
   <<: *default_llm
   temperature: 0.0
   top_p: 1.0
+
+
