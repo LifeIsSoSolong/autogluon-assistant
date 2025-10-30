@@ -20,7 +20,7 @@ src/autogluon/mcp/server_info.txt
 # Project specific
 .aim/
 AutogluonModels/
-data/
+#data/
 user_data/
 sample_dataset/
 results/
