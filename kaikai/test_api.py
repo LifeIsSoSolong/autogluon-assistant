@@ -15,6 +15,7 @@ try:
         model=model_name,
         messages=[
             {'role': 'user', 'content': '你是谁？'}
+            # {"role": "user", "content": [{"type": "text", "text": "who are you?"}]}
         ]
     )
 except Exception as err:
