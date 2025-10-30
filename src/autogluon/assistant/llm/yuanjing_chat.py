@@ -40,7 +40,7 @@ def _build_kwargs(config: DictConfig, session_name: str) -> Dict[str, Any]:
     if hasattr(config, "verbose"):
         kwargs["verbose"] = config.verbose
 
-    kwargs["openai_proxy"] = base_url
+    # kwargs["openai_proxy"] = base_url
 
     return kwargs
 
