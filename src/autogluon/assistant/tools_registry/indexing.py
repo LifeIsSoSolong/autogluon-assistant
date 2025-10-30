@@ -1,4 +1,4 @@
-import contextlib
+﻿import contextlib
 import io
 import logging
 import os
@@ -8,8 +8,6 @@ from typing import Dict, List, Optional, Tuple
 
 import faiss
 import numpy as np
-from FlagEmbedding import FlagAutoModel
-
 from .registry import ToolsRegistry
 
 logger = logging.getLogger(__name__)
@@ -67,6 +65,7 @@ class TutorialIndexer:
     def _load_embedding_model(self):
         """Load the BGE embedding model lazily."""
         if self.model is None:
+            from FlagEmbedding import FlagAutoModel
             logger.info(f"Loading embedding model: {self.embedding_model_name}")
             self.model = FlagAutoModel.from_finetuned(
                 self.embedding_model_name,
@@ -447,3 +446,4 @@ class TutorialIndexer:
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Context manager exit with cleanup."""
         self.cleanup()
+

@@ -48,6 +48,7 @@ class RetrieverAgent(BaseAgent):
                         hf_endpoint = global_cfg.get("huggingface_endpoint")
 
         self.indexer = TutorialIndexer(hf_endpoint=hf_endpoint)
+        logger.info(f"RetrieverAgent using Hugging Face endpoint: {hf_endpoint}")
         self._initialize_indexer()
 
         if self.retriever_llm_config.multi_turn:
