@@ -20,7 +20,7 @@ enable_meta_prompting: False
 
 llm: &default_llm
   provider: yuanjing
-  model: deepseek-r1
+  model: deepseek-v3
   base_url: https://maas-api.ai-yuanjing.com/openapi/compatible-mode/v1
   api_key_env: YUANJING_API_KEY
   max_tokens: 65535

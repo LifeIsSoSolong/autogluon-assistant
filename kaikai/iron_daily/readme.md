@@ -1,37 +1,67 @@
-﻿## Task Overview
+﻿## 1. Objective
 
-We aim to build a multi-step forecasting pipeline for daily iron ore futures (contract code `FU00002776`). The goal is to predict the next 12 trading-day prices based on historical market features while respecting realistic data availability (no same-day leakage).
+Run the `kaikai/iron_daily` project inside MLZero (Autogluon-assistant) to **forecast the next 12 trading-day closes** of iron ore futures (contract `FU00002776`).  
 
-- **Input root**: `kaikai/iron_daily`
-- **Training set**: `data/train_data` (tabular time series)
-- **Test set**: `data/test_data` (contains future 12 trading dates; column `value` must be filled with forecasts)
-- **Column dictionary**: `data/index` (describes feature names)
-- **Target column**: `FU00002776`
+- Only **one raw file** (`data/train.csv`) is provided.  
+- The timestamp column is named **`timestamp`**.  
+- All non-target columns (`ID01002312`, …, `CM0000013263`) are features you should use and **already shifted by one trading day** (lag = 1). Do **not** lag them again.  
+- There is **no `test.csv`**. You must extrapolate future timestamps based on the last row of `train.csv`.
 
-## Data & Feature Handling
+## 2. Directory Layout
 
-1. All non-target columns are candidate predictors. When forecasting day *t*, only use features up to *t-1* (strict one-day lag on every feature) to avoid leakage.
-2. Training data contains missing values and possible anomalies; design a preprocessing pipeline that cleans/filters before modeling.
-3. After preprocessing, save the cleaned dataset (feature matrix + target) to `processed_data/` for reproducibility.
+```
+kaikai/iron_daily/
+├── data/
+│   └── train.csv              # 2015-12-28 – 2025-08-29, lagged features
+└── readme.md                  # THIS FILE (agent instructions)
+```
 
-## Modeling Requirements
+## 3. Data Schema & Column Handling
 
-- Construct a supervised learning setup where the model ingests **N historical days of lagged features** (you decide the optimal window length) and outputs the target for the next **12 consecutive trading days**.
-- Split the historical data into training/validation by sampling one or more representative “forecast segments” (rolling or hold-out windows). Report **RMSE** on the chosen validation segment(s) to track generalization.
-- Provide clear documentation of how the validation window is selected (e.g., last K trading days, rolling origin, etc.).
+Current columns:
 
-## Expected Deliverables
+| Column          | Role                                   |
+|-----------------|----------------------------------------|
+| `timestamp`     | Trading day (string `YYYY/MM/DD`)      |
+| `value`         | Target close price (FU00002776)        |
+| `ID01002312`    | Lagged feature (already t-1)           |
+| `ID00186575`    | Lagged feature (already t-1)           |
+| `ID00186100`    | Lagged feature (already t-1)           |
+| `ID00183109`    | Lagged feature (already t-1)           |
+| `GM0000033031`  | Lagged feature (already t-1)           |
+| `CM0000013263`  | Lagged feature (already t-1)           |
 
-1. Preprocessing script/notebook that:
-   - Loads raw data, aligns timestamps, applies the one-day lag, handles missing values/outliers.
-   - Exports the cleaned dataset (and any feature engineering artifacts) to `processed_data/`.
-2. Modeling script/notebook that:
-   - Trains the multi-step forecaster.
-   - Evaluates on the validation slice(s) and prints RMSE.
-   - Generates `results.csv` matching `data/test_data` (same schema, `value` column filled with predictions for the 12 future trading days).
-3. Brief summary of:
-   - Preprocessing steps.
-   - Model architecture/algorithm and chosen history window *N*.
-   - Validation strategy and RMSE.
+**Dynamic column discovery is mandatory** because extra features may appear:
 
-Keep all outputs under `runs/iron_daily/...` so the experiment trail is easy to inspect. Feel free to add extra diagnostics (feature importance, residual plots) if helpful.
+```python
+import pandas as pd
+
+df = pd.read_csv("kaikai/iron_daily/data/train.csv", parse_dates=["timestamp"])
+time_col = "timestamp"
+target_col = "value"
+feature_cols = [c for c in df.columns if c not in {time_col, target_col}]
+```
+
+All `feature_cols` already represent information from `t-1`, so they can be aligned directly with `value` at `t`. Further feature lags are optional but **not required**.
+
+
+## 4. **Validation**
+   - Use a time-based holdout or rolling-origin CV. Recommended: last ~200 trading days as validation.  
+   - Report RMSE per horizon and averaged RMSE. Log the exact validation window (start/end).
+
+## 5. Forecast Generation (No test.csv)
+
+1. **Determine forecast timestamps**
+   - Let `t_last = df['timestamp'].max()` (currently 2025-08-29).  
+   - Generate the next 12 trading days or a custom trading-calendar util.
+2. **Prepare input features**
+   - Use the **latest available row** (or multiple recent rows if the model expects sequences).  
+3. **Predict horizons**
+   - Model outputs a length-12 vector.  
+   - Combine with generated timestamps to build a dataframe:
+     ```
+     forecast = pd.DataFrame({
+         "timestamp": future_dates,
+         "value": predictions
+     })
+     ```

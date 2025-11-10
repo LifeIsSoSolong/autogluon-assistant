@@ -1,0 +1,99 @@
+{
+    "data_file": "data/iron/merged_data_0929.xlsx",
+    "target_name": "FU00002776",
+    "output_file": "data/iron/datasets/final_features_01合约收盘价_0929_week_2.1.csv",
+    "features": {
+                  "supply": [
+                    {
+                      "feature_name": "ID01002312",
+                      "file_path": "data/mysteel3/ID01002312_铁矿：进口：库存：45个港口（日）.csv",
+                      "source_column": "value",
+                      "fill_method": "ffill",
+                      "agg_method": "last"
+                    },
+                    {
+                      "feature_name": "ID00186575",
+                      "file_path": "data/mysteel3/ID00186575_铁矿：船舶到港量：北方港口（周）.csv",
+                      "source_column": "value",
+                      "fill_method": "weekly_lag1_weekly"
+                    },
+                    {
+                      "feature_name": "ID01002310",
+                      "file_path": "data/mysteel3/ID01002310_铁矿：进口：库存：247家钢铁企业（周）.csv",
+                      "source_column": "value",
+                      "fill_method": "weekly_lag1_weekly"
+                    },
+                    {
+                      "feature_name": "ID02039105",
+                      "file_path": "data/mysteel3/ID02039105_铁矿：巴西产：发货量（周）.csv",
+                      "source_column": "value",
+                      "fill_method": "weekly_lag1_weekly"
+                    },
+                    {
+                      "feature_name": "ID02039108",
+                      "file_path": "data/mysteel3/ID02039108_铁矿：澳大利亚产：发货量（周）.csv",
+                      "source_column": "value",
+                      "fill_method": "weekly_lag1_weekly"
+                    }
+                  ],
+                  "demand": [
+                    {
+                      "feature_name": "ID00184088",
+                      "file_path": "data/mysteel3/ID00184088_247家钢铁企业：铁水：日均产量：中国（周）.csv",
+                      "source_column": "value",
+                      "fill_method": "weekly_lag1_weekly"
+                    },
+                    {
+                      "feature_name": "ID00186100",
+                      "file_path": "data/mysteel3/ID00186100_铁矿：进口：日均疏港量合计：45个港口（周）.csv",
+                      "source_column": "value",
+                      "fill_method": "weekly_lag1_weekly"
+                    },
+                    {
+                      "feature_name": "ID01002311",
+                      "file_path": "data/mysteel3/ID01002311_铁矿：进口：库存消费比：247家钢铁企业（周）.csv",
+                      "source_column": "value",
+                      "fill_method": "weekly_lag1_weekly"
+                    },
+                    {
+                      "feature_name": "ID00183109",
+                      "file_path": "data/mysteel3/ID00183109_247家钢铁企业：高炉开工率：中国（周）.csv",
+                      "source_column": "value",
+                      "fill_method": "weekly_lag1_weekly"
+                    },
+                    {
+                      "feature_name": "ID00183114",
+                      "file_path": "data/mysteel3/ID00183114_247家钢铁企业：高炉产能利用率：中国（周）.csv",
+                      "source_column": "value",
+                      "fill_method": "weekly_lag1_weekly"
+                    },
+                    {
+                      "feature_name": "ID00183126",
+                      "file_path": "data/mysteel/ID00183126_247家钢铁企业：盈利率：中国（周）.csv",
+                      "source_column": "value",
+                      "fill_method": "weekly_lag1_weekly"
+                    },
+                    {
+                      "feature_name": "ID01244898",
+                      "file_path": "data/mysteel3/ID01244898_铁水：不含税平均成本：114家钢铁企业（周）.csv",
+                      "source_column": "value",
+                      "fill_method": "weekly_lag1_weekly"
+                    }
+                  ],
+                  "macro": [
+                    {
+                      "feature_name": "GM0000033031",
+                      "file_path": "data/mysteel3/GM0000033031_美国：非农就业人员：季调人数变动（月）.csv",
+                      "source_column": "value",
+                      "fill_method": "monthly_lag1_weekly"
+                    },
+                    {
+                      "feature_name": "CM0000013263",
+                      "file_path": "data/mysteel3/CM0000013263_统计局：制造业PMI：购进价（月）.csv",
+                      "source_column": "value",
+                      "fill_method": "monthly_lag1_weekly"
+                    }
+                  ]
+
+                }
+}
