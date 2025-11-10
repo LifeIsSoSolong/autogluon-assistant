@@ -105,7 +105,7 @@ Create and configure a conda environment in "{ENV_FOLDER_NAME}" folder under {it
  - Install required packages from {common_env_file} and {selected_tool_env_file} using uv pip install -r {selected_tool_env_file} -r {common_env_file}"""
         env_prompt += "\n - You can install torch using this: pip install torch==2.7.1 torchvision==0.22.1 torchaudio==2.7.1 --index-url https://download.pytorch.org/whl/cu126 -i https://pypi.tuna.tsinghua.edu.cn/simple"
         env_prompt += "\n - You can install autogluon using this: pip install autogluon"
-        env_prompt += "\n - you can isntall pandas using this: pip install pandas"
+        env_prompt += "\n - you can isntall others using this: pip install pandas numpy pyarrow scikit-learn lightgbm matplotlib seaborn"
         if not create_venv:
             env_prompt += f"\n - Do not install or update any package unless there is an error due to the missing package.\n - Do NOT upgrade {selected_tool} which is already installed."
         else:
