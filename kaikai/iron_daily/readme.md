@@ -7,12 +7,18 @@ Dataset specifics for this revision:
 - The timestamp column is named **`timestamp`**.
 - All non-target columns (`ID01002312`, …, `CM0000013263`) are **already shifted by one trading day** (lag = 1). Do **not** lag them again.
 - There is **no `test.csv`**. Forecast timestamps must be extrapolated from the last row of `train.csv`.
+- You should add  item_id column to the dataframe if you want to use item_id column.
+- You should use freq="B" in the training code.
+- You don't need to check the format of output results.csv
+- You should use RMSE as the metric.
+- You should try to find the best model.
+- You should split many validation sets from `train.csv` to avoid overfitting.
 
 ## 2. Environment & Dependencies
 
 All five previous coding attempts failed because the generated scripts created bare conda envs without installing `pandas` or `autogluon.timeseries`, and torch downloads timed out (see `runs/iron_daily/detail_log.txt:101-211`). To avoid this, every MLZero workflow must:
 
-1. Create/activate a environment using `conda create -n kaikai_temp python=3.10 -y`
+1. Create/activate a environment using `conda create -n ****** python=3.10 -y`
 2. Install the required libraries **before** running any project code:
    - `pandas`, `numpy`, `pyarrow`, `scikit-learn`, `lightgbm`
    - `autogluon` (the latest stable release)
