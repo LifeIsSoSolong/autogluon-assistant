@@ -9,9 +9,8 @@ Dataset specifics for this revision:
 - There is **no `test.csv`**. Forecast timestamps must be extrapolated from the last row of `train.csv`.
 - You should add  item_id column to the dataframe if you want to use item_id column.
 - You should use freq="B" in the training code.
-- You don't need to check the format of output results.csv
-- You should use RMSE as the metric.
-- You should try to find the best model.
+- You must use "RMSE" as the metric: `eval_metric="RMSE"`
+- You should try to find the best model: `presets="high_quality"`
 - You should split many validation sets from `train.csv` to avoid overfitting.
 
 ## 2. Environment & Dependencies
