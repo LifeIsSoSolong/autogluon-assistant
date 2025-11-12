@@ -11,7 +11,7 @@ Dataset specifics for this revision:
 - You should use freq="B" in the training code.
 - You must use "RMSE" as the metric: `eval_metric="RMSE"`
 - You should try to find the best model: `presets="high_quality"`
-- You should split many validation sets from `train.csv` to avoid overfitting.
+- You should split many validation sets from `train.csv` to avoid overfitting
 
 ## 2. Environment & Dependencies
 

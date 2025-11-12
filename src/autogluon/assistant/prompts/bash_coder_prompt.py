@@ -131,7 +131,7 @@ Create and configure a conda environment in "{ENV_FOLDER_NAME}" folder under {it
             env_prompt += f"\n - Do not install or update any package unless there is an error due to the missing package.\n - Do NOT upgrade {selected_tool} which is already installed."
         else:
             env_prompt += "\n - Install any packages that are needed in the python script"
-        env_prompt += "\n - you should add `export HF_ENDPOINT=https://hf-mirror.com && ` before execute python script ,an example is: export HF_ENDPOINT=https://hf-mirror.com && python code_path/generated_code.py"
+        env_prompt += "\n - You should add `export HF_ENDPOINT=https://hf-mirror.com && ` before execute python script ,an example is: export HF_ENDPOINT=https://hf-mirror.com && python code_path/generated_code.py"
         return env_prompt
 
     # def get_env_prompt(self):
