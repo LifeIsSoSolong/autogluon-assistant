@@ -60,13 +60,33 @@ class ChatLLMFactory:
         if provider not in valid_providers:
             raise ValueError(f"Invalid provider: {provider}. Must be one of {valid_providers}")
 
+        skip_model_validation = bool(getattr(config, "skip_model_validation", False))
+        proxy_url = getattr(config, "proxy_url", None)
+        if proxy_url:
+            skip_model_validation = True
+
         if provider not in {"sagemaker", "yuanjing"}:
             valid_models = cls.get_valid_models(provider)
-            if model not in valid_models:
-                if model[3:] not in valid_models:  # TODO: better logic for cross region inference
-                    raise ValueError(
-                        f"Invalid model: {model} for provider {provider}. All valid models are {valid_models}. If you are using Bedrock, please check if the requested model is available in the provided AWS_DEFAULT_REGION: {os.environ.get('AWS_DEFAULT_REGION')}"
-                    )
+
+            if not valid_models:
+                logger.warning(
+                    "No models returned for provider %s; skipping validation. "
+                    "Set `skip_model_validation` in the config to silence this warning when using custom endpoints.",
+                    provider,
+                )
+                skip_model_validation = True
+
+            if not skip_model_validation:
+                if model not in valid_models:
+                    if model[3:] not in valid_models:  # TODO: better logic for cross region inference
+                        raise ValueError(
+                            f"Invalid model: {model} for provider {provider}. All valid models are {valid_models}. If you are using Bedrock, please check if the requested model is available in the provided AWS_DEFAULT_REGION: {os.environ.get('AWS_DEFAULT_REGION')}"
+                        )
+            else:
+                logger.info(
+                    "Skipping model validation for provider %s (custom endpoint or skip flag set).",
+                    provider,
+                )
 
         if provider == "openai":
             return create_openai_chat(config, session_name)

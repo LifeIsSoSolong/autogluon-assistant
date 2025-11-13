@@ -32,7 +32,7 @@ def compute_metrics(y_true, y_pred, positive_label=">50K"):
 
 def main():
     base_dir = Path(__file__).parent
-    preds_path = base_dir / "results.csv"
+    preds_path = base_dir / "results_gpt4o_iter1.csv"
     truth_path = base_dir / "test_withlabel.csv"
 
     y_pred = load_labels(preds_path)
@@ -40,6 +40,7 @@ def main():
 
     accuracy, precision, recall = compute_metrics(y_true, y_pred)
 
+    print(f"Results for {preds_path.name}:")
     print(f"Predictions: {len(y_pred)} records")
     print(f"Accuracy : {accuracy:.4f}")
     print(f"Precision: {precision:.4f}")
